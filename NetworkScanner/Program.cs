@@ -17,10 +17,7 @@ namespace NetworkScanner
         private static readonly bool SHOW_UP = true;
         private static readonly int TIMEOUT = 100;
 
-        // private
         private static int up_count = 0;
-        
-        // private readonly
         private static readonly string TITLE = Console.Title;
         private static readonly CountdownEvent COUNTDOWN = new CountdownEvent(1);
         private static readonly object LOCK = new object();
@@ -30,6 +27,8 @@ namespace NetworkScanner
         {
             STOPWATCH.Start();
 
+            Console.Title = "Network Scanner v1";
+
             Console.WriteLine();
             Console.WriteLine(" ------------------------------------------------------------------------------------------------------------");
             Console.WriteLine(" | {0,-15} | {1,-60} | {2,-10} | {3,-10} |", "HOST IPv4", "HOST NAME", "RESPONSE", "RT TIME");
@@ -37,10 +36,6 @@ namespace NetworkScanner
 
             if (args.Length != 0)
             {
-                // if we're given arguments we should just scan those
-
-                Console.Title = "Network Scanner v1";
-
                 foreach (string ip in args)
                 {
                     COUNTDOWN.AddCount();
@@ -49,33 +44,20 @@ namespace NetworkScanner
                     p.PingCompleted += new PingCompletedEventHandler(P_PingCompleted);
                     p.SendAsync(ip, TIMEOUT, ip);
                 }
-
-                COUNTDOWN.Signal();
-                COUNTDOWN.Wait();
-                STOPWATCH.Stop();
-
-                Console.WriteLine(" ----------------------------------------------------------------------------------------------------------");
-                Console.WriteLine();
-                Console.WriteLine(" took {0} milliseconds. {1} host(s) up.", STOPWATCH.ElapsedMilliseconds, up_count);
-
-                Console.Title = TITLE;
-
-                return;
             }
-
-            Console.Title = "Network Scanner v1";
-
-            for (int i = 0; i <= 255; i++)
+            else
             {
-                COUNTDOWN.AddCount();
+                for (int i = 0; i <= 255; i++)
+                {
+                    COUNTDOWN.AddCount();
 
-                string ip = String.Format(IP_BASE, i);
+                    string ip = String.Format(IP_BASE, i);
 
-                Ping p = new Ping();
-                p.PingCompleted += new PingCompletedEventHandler(P_PingCompleted);
-                p.SendAsync(ip, TIMEOUT, ip);
+                    Ping p = new Ping();
+                    p.PingCompleted += new PingCompletedEventHandler(P_PingCompleted);
+                    p.SendAsync(ip, TIMEOUT, ip);
+                }
             }
-
             COUNTDOWN.Signal();
             COUNTDOWN.Wait();
             STOPWATCH.Stop();
